@@ -1,16 +1,16 @@
 #include "Rent.h"
+#include <iostream>
+using namespace std;
 
-/* ============ INISIALISASI HEAD ============ */
+Toko *firstToko = NULL;
+Barang *firstBarang = NULL;
+Relasi *firstRelasi = NULL;
 
-Toko* firstToko = NULL;
-Barang* firstBarang = NULL;
-Relasi* firstRelasi = NULL;
-
-/* ============== SEARCH ================= */
-
-Toko* cariToko(int idToko) {
-    Toko* p = firstToko;
-    while (p != NULL) {
+Toko *cariToko(int idToko)
+{
+    Toko *p = firstToko;
+    while (p != NULL)
+    {
         if (p->idToko == idToko)
             return p;
         p = p->next;
@@ -18,9 +18,11 @@ Toko* cariToko(int idToko) {
     return NULL;
 }
 
-Barang* cariBarang(int idBarang) {
-    Barang* p = firstBarang;
-    while (p != NULL) {
+Barang *cariBarang(int idBarang)
+{
+    Barang *p = firstBarang;
+    while (p != NULL)
+    {
         if (p->idBarang == idBarang)
             return p;
         p = p->next;
@@ -28,40 +30,74 @@ Barang* cariBarang(int idBarang) {
     return NULL;
 }
 
-/* ============== TAMBAH DATA ================= */
-
-void tambahToko(int idToko, string namaToko) {
-    Toko* baru = new Toko{idToko, namaToko, firstToko};
+void tambahToko(int idToko, string namaToko)
+{
+    Toko *baru = new Toko;
+    baru->idToko = idToko;
+    baru->namaToko = namaToko;
+    baru->next = firstToko;
     firstToko = baru;
+
+    cout << "Toko berhasil ditambahkan\n";
 }
 
-void tambahBarang(int idBarang, string namaBarang) {
-    Barang* baru = new Barang{idBarang, namaBarang, firstBarang};
+void tambahBarang(int idBarang, string namaBarang)
+{
+    Barang *baru = new Barang;
+    baru->idBarang = idBarang;
+    baru->namaBarang = namaBarang;
+    baru->next = firstBarang;
     firstBarang = baru;
+
+    cout << "Barang berhasil ditambahkan\n";
 }
 
-void tambahRelasi(int idToko, int idBarang) {
-    Toko* t = cariToko(idToko);
-    Barang* b = cariBarang(idBarang);
+void tambahRelasi(int idToko, int idBarang)
+{
+    Toko *t = cariToko(idToko);
+    Barang *b = cariBarang(idBarang);
 
-    if (t != NULL && b != NULL) {
-        Relasi* r = new Relasi{t, b, firstRelasi};
-        firstRelasi = r;
-        cout << "Relasi berhasil ditambahkan.\n";
-    } else {
-        cout << "Toko atau Barang tidak ditemukan.\n";
+    if (t == NULL || b == NULL)
+    {
+        cout << "Toko atau Barang tidak ditemukan\n";
+        return;
     }
+
+    Relasi *r = firstRelasi;
+    while (r != NULL)
+    {
+        if (r->toko == t && r->barang == b)
+        {
+            cout << "Relasi sudah ada\n";
+            return;
+        }
+        r = r->next;
+    }
+
+    Relasi *baru = new Relasi;
+    baru->toko = t;
+    baru->barang = b;
+    baru->next = firstRelasi;
+    firstRelasi = baru;
+
+    cout << "Relasi berhasil ditambahkan\n";
 }
 
-/* ============== HAPUS ================= */
-
-void hapusToko(int idToko) {
+void hapusToko(int idToko)
+{
     Toko *p = firstToko, *prev = NULL;
-    while (p != NULL && p->idToko != idToko) {
+
+    while (p != NULL && p->idToko != idToko)
+    {
         prev = p;
         p = p->next;
     }
-    if (!p) return;
+
+    if (p == NULL)
+    {
+        cout << "Toko tidak ditemukan\n";
+        return;
+    }
 
     if (prev == NULL)
         firstToko = p->next;
@@ -69,29 +105,45 @@ void hapusToko(int idToko) {
         prev->next = p->next;
 
     Relasi *r = firstRelasi, *pr = NULL;
-    while (r != NULL) {
-        if (r->toko == p) {
+    while (r != NULL)
+    {
+        if (r->toko == p)
+        {
             if (pr == NULL)
                 firstRelasi = r->next;
             else
                 pr->next = r->next;
-            delete r;
-            r = (pr == NULL) ? firstRelasi : pr->next;
-        } else {
+
+            Relasi *hapus = r;
+            r = r->next;
+            delete hapus;
+        }
+        else
+        {
             pr = r;
             r = r->next;
         }
     }
+
     delete p;
+    cout << "Toko dan relasinya berhasil dihapus\n";
 }
 
-void hapusBarang(int idBarang) {
+void hapusBarang(int idBarang)
+{
     Barang *p = firstBarang, *prev = NULL;
-    while (p != NULL && p->idBarang != idBarang) {
+
+    while (p != NULL && p->idBarang != idBarang)
+    {
         prev = p;
         p = p->next;
     }
-    if (!p) return;
+
+    if (p == NULL)
+    {
+        cout << "Barang tidak ditemukan\n";
+        return;
+    }
 
     if (prev == NULL)
         firstBarang = p->next;
@@ -99,68 +151,153 @@ void hapusBarang(int idBarang) {
         prev->next = p->next;
 
     Relasi *r = firstRelasi, *pr = NULL;
-    while (r != NULL) {
-        if (r->barang == p) {
+    while (r != NULL)
+    {
+        if (r->barang == p)
+        {
             if (pr == NULL)
                 firstRelasi = r->next;
             else
                 pr->next = r->next;
-            delete r;
-            r = (pr == NULL) ? firstRelasi : pr->next;
-        } else {
+
+            Relasi *hapus = r;
+            r = r->next;
+            delete hapus;
+        }
+        else
+        {
             pr = r;
             r = r->next;
         }
     }
+
     delete p;
+    cout << "Barang dan relasinya berhasil dihapus\n";
 }
 
-/* ============== TAMPIL ================= */
+void tampilSemuaToko()
+{
+    if (firstToko == NULL)
+    {
+        cout << "Data toko kosong\n";
+        return;
+    }
 
-void tampilSemuaToko() {
-    for (Toko* t = firstToko; t != NULL; t = t->next) {
-        cout << "\nToko: " << t->namaToko << endl;
-        for (Relasi* r = firstRelasi; r != NULL; r = r->next)
+    for (Toko *t = firstToko; t != NULL; t = t->next)
+    {
+        cout << "\nID Toko   : " << t->idToko << endl;
+        cout << "Nama Toko : " << t->namaToko << endl;
+        cout << "Barang disewakan:\n";
+
+        bool ada = false;
+        for (Relasi *r = firstRelasi; r != NULL; r = r->next)
+        {
             if (r->toko == t)
-                cout << " - " << r->barang->namaBarang << endl;
+            {
+                cout << " - ID Barang : " << r->barang->idBarang
+                     << " | Nama : " << r->barang->namaBarang << endl;
+                ada = true;
+            }
+        }
+
+        if (!ada)
+            cout << " (Tidak ada barang)\n";
     }
 }
 
-void tampilBarangDariToko(int idToko) {
-    Toko* t = cariToko(idToko);
-    if (!t) return;
+void tampilBarangDariToko(int idToko)
+{
+    Toko *t = cariToko(idToko);
+    if (t == NULL)
+    {
+        cout << "Toko tidak ditemukan\n";
+        return;
+    }
 
-    cout << "\nBarang di toko " << t->namaToko << ":\n";
-    for (Relasi* r = firstRelasi; r != NULL; r = r->next)
+    cout << "\nID Toko   : " << t->idToko << endl;
+    cout << "Nama Toko : " << t->namaToko << endl;
+    cout << "Barang disewakan:\n";
+
+    bool ada = false;
+    for (Relasi *r = firstRelasi; r != NULL; r = r->next)
+    {
         if (r->toko == t)
-            cout << "- " << r->barang->namaBarang << endl;
+        {
+            cout << " - ID Barang : " << r->barang->idBarang
+                 << " | Nama : " << r->barang->namaBarang << endl;
+            ada = true;
+        }
+    }
+
+    if (!ada)
+        cout << " (Tidak ada barang)\n";
 }
 
-void tampilTokoDariBarang(int idBarang) {
-    Barang* b = cariBarang(idBarang);
-    if (!b) return;
+void tampilTokoDariBarang(int idBarang)
+{
+    Barang *b = cariBarang(idBarang);
+    if (b == NULL)
+    {
+        cout << "Barang tidak ditemukan\n";
+        return;
+    }
 
-    cout << "\nToko yang menyewakan " << b->namaBarang << ":\n";
-    for (Relasi* r = firstRelasi; r != NULL; r = r->next)
+    cout << "\nID Barang   : " << b->idBarang << endl;
+    cout << "Nama Barang : " << b->namaBarang << endl;
+    cout << "Disewakan oleh toko:\n";
+
+    bool ada = false;
+    for (Relasi *r = firstRelasi; r != NULL; r = r->next)
+    {
         if (r->barang == b)
-            cout << "- " << r->toko->namaToko << endl;
+        {
+            cout << " - ID Toko : " << r->toko->idToko
+                 << " | Nama : " << r->toko->namaToko << endl;
+            ada = true;
+        }
+    }
+
+    if (!ada)
+        cout << " (Tidak ada toko)\n";
 }
 
-void tampilTokoTerbanyakTersedikit() {
+void tampilTokoTerbanyakTersedikit()
+{
+    if (firstToko == NULL)
+    {
+        cout << "Data toko kosong\n";
+        return;
+    }
+
     Toko *maxT = NULL, *minT = NULL;
-    int max = -1, min = 9999;
+    int max = -1, min = 999999;
 
-    for (Toko* t = firstToko; t != NULL; t = t->next) {
+    for (Toko *t = firstToko; t != NULL; t = t->next)
+    {
         int count = 0;
-        for (Relasi* r = firstRelasi; r != NULL; r = r->next)
-            if (r->toko == t) count++;
+        for (Relasi *r = firstRelasi; r != NULL; r = r->next)
+            if (r->toko == t)
+                count++;
 
-        if (count > max) { max = count; maxT = t; }
-        if (count < min) { min = count; minT = t; }
+        if (count > max)
+        {
+            max = count;
+            maxT = t;
+        }
+        if (count < min)
+        {
+            min = count;
+            minT = t;
+        }
     }
 
-    if (maxT && minT) {
-        cout << "\nToko Terlengkap : " << maxT->namaToko << " (" << max << " barang)\n";
-        cout << "Toko Tersedikit : " << minT->namaToko << " (" << min << " barang)\n";
-    }
+    cout << "\nToko Terlengkap : "
+         << maxT->namaToko
+         << " | ID: " << maxT->idToko
+         << " (" << max << " barang)\n";
+
+    cout << "Toko Tersedikit : "
+         << minT->namaToko
+         << " | ID: " << minT->idToko
+         << " (" << min << " barang)\n";
 }
