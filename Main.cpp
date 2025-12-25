@@ -24,6 +24,12 @@ int main() {
             string nama;
             cout << "ID Toko: ";
             cin >> id;
+
+            if (cariToko(id) != NULL) {
+                cout << "ID Toko sudah terdaftar\n";
+                continue;
+            }
+
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Nama Toko: ";
             getline(cin, nama);
@@ -34,6 +40,12 @@ int main() {
             string nama;
             cout << "ID Barang: ";
             cin >> id;
+
+            if (cariBarang(id) != NULL) {
+                cout << "ID Barang sudah terdaftar\n";
+                continue;
+            }
+
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Nama Barang: ";
             getline(cin, nama);
